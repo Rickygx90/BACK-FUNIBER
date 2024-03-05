@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -19,6 +20,7 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
+        $task->completed = !$task->completed;
         $task->update($request->all());
         return $task;
     }
@@ -27,5 +29,12 @@ class TaskController extends Controller
     {
         $task->delete();
         return response()->json(['message' => 'Task deleted']);
+    }
+
+    public function deleteTasks(Request $request)
+    {
+        $ids = $request->input('completedList');
+        Task::whereIn('id', $ids)->delete();
+        return response()->json(['message' => 'Tasks deleted']);
     }
 }
